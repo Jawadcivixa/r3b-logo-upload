@@ -1,25 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import { Suspense, useState } from "react";
+// import { Suspense, useRef } from "react";
+
+import "./App.css";
+import earth from "./images/earth.png";
+import { Box } from "./components/Box";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [baseURL, setBaseURL] = useState(earth);
+
+	const getBase64 = (file) => {
+		// Make new FileReader
+		let reader = new FileReader();
+
+		// Convert the file to base64 text
+		reader.readAsDataURL(file);
+		reader.onload = () => setBaseURL(reader.result);
+	};
+
+	const handleImageChange = (e) => {
+		getBase64(e.target.files[0]);
+	};
+
+	const handleImageUpload = (e) => {
+		console.log(baseURL);
+	};
+
+	return (
+		<>
+			{/* <input type="file" onChange={handleImageChange} />
+			<button onClick={handleImageUpload}>Submit</button>
+			<img src={baseURL} alt="img" /> */}
+			<div style={{ height: "90vh" }}>
+				<Suspense fallback={<h3>Loading...</h3>}>
+					<Canvas>
+						<OrbitControls enablePan={false} enableRotate={false} />
+						<ambientLight />
+						<Box image={baseURL} position={[-4, 0, 0]} />
+						<Box image={earth} position={[4, 0, -0]} />
+					</Canvas>
+				</Suspense>
+			</div>
+			<div>
+				<input type="file" onChange={handleImageChange} />
+			</div>
+		</>
+	);
 }
 
 export default App;
